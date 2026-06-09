@@ -1,3 +1,8 @@
+"""
+Cliente TCP para transferência de arquivos.
+Permite upload, download, listagem e remoção de arquivos.
+"""
+
 import socket
 import os
 
@@ -18,6 +23,8 @@ print("Conectado ao servidor")
 
 
 def upload():
+    """Envia um arquivo do cliente para o servidor."""
+    
     nome_arquivo = input("Nome do arquivo: ")
 
     caminho = os.path.join(CLIENT_FILES, nome_arquivo)
@@ -40,6 +47,8 @@ def upload():
 
 
 def download():
+    """Baixa arquivo do servidor."""
+
     nome_arquivo = input("Nome do arquivo: ")
 
     mensagem = f"DOWNLOAD|{nome_arquivo}"
@@ -76,6 +85,8 @@ def download():
 
 
 def listar():
+    """Lista arquivos disponíveis no servidor."""
+
     client.sendall("LISTAR".encode())
 
     dados = client.recv(BUFFER_SIZE).decode()
@@ -89,6 +100,8 @@ def listar():
 
 
 def remover():
+    """Remove arquivo do servidor."""
+
     nome_arquivo = input("Nome do arquivo: ")
 
     mensagem = f"REMOVER|{nome_arquivo}"

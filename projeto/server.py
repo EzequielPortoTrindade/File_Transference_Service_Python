@@ -1,8 +1,14 @@
+"""
+Servidor TCP para transferência de arquivos.
+Gerencia uploads, downloads, listagem e remoção de arquivos.
+"""
+
 import socket
 import threading
 import os
+from pathlib import Path
 
-HOST = 'localhost'
+HOST = "localhost"
 PORT = 5050
 BUFFER_SIZE = 1024
 
@@ -13,9 +19,12 @@ os.makedirs(SERVER_FILES, exist_ok=True)
 
 
 def receber_arquivo(conn, nome_arquivo, tamanho):
+    """Recebe arquivo enviado por um cliente."""
+
+    nome_arquivo = os.path.basename(nome_arquivo)
     caminho = os.path.join(SERVER_FILES, nome_arquivo)
 
-    with open(caminho, 'wb') as f:
+    with open(caminho, "wb") as f:
         bytes_recebidos = 0
 
         while bytes_recebidos < tamanho:
@@ -31,6 +40,9 @@ def receber_arquivo(conn, nome_arquivo, tamanho):
 
 
 def enviar_arquivo(conn, nome_arquivo):
+    """Envia arquivo solicitado pelo cliente."""
+
+    nome_arquivo = os.path.basename(nome_arquivo)
     caminho = os.path.join(SERVER_FILES, nome_arquivo)
 
     if not os.path.exists(caminho):
@@ -46,7 +58,7 @@ def enviar_arquivo(conn, nome_arquivo):
     if resposta != "READY":
         return
 
-    with open(caminho, 'rb') as f:
+    with open(caminho, "rb") as f:
         while chunk := f.read(BUFFER_SIZE):
             conn.sendall(chunk)
 
@@ -54,83 +66,116 @@ def enviar_arquivo(conn, nome_arquivo):
 
 
 def listar_arquivos(conn):
+    """Lista arquivos armazenados no servidor."""
+
     arquivos = os.listdir(SERVER_FILES)
 
     if not arquivos:
         conn.sendall("VAZIO".encode())
         return
 
-    lista = "\n".join(arquivos)
-
-    conn.sendall(lista.encode())
-
+    conn.sendall("\n".join(arquivos).encode())
 
 def remover_arquivo(conn, nome_arquivo):
-    caminho = os.path.join(SERVER_FILES, nome_arquivo)
+    """Remove arquivo com proteção contra path traversal."""
 
-    if os.path.exists(caminho):
-        os.remove(caminho)
+    base_dir = Path(SERVER_FILES).resolve()
+
+    nome_arquivo = Path(nome_arquivo).name
+
+    caminho = (base_dir / nome_arquivo).resolve()
+
+    if base_dir not in caminho.parents:
+        conn.sendall("ERRO".encode())
+        return
+
+    if caminho.exists():
+        caminho.unlink()
         conn.sendall("OK".encode())
         print(f"Arquivo removido: {nome_arquivo}")
     else:
         conn.sendall("ERRO".encode())
 
+def processar_comando(conn, dados):
+    """Interpreta e executa comandos recebidos do cliente."""
+
+    partes = dados.split("|")
+
+    if len(parts := partes) == 0:
+        return
+
+    acao = partes[0]
+
+    try:
+        if acao == "UPLOAD":
+            nome_arquivo = partes[1]
+            tamanho = int(partes[2])
+            receber_arquivo(conn, nome_arquivo, tamanho)
+
+        elif acao == "DOWNLOAD":
+            nome_arquivo = partes[1]
+            enviar_arquivo(conn, nome_arquivo)
+
+        elif acao == "LISTAR":
+            listar_arquivos(conn)
+
+        elif acao == "REMOVER":
+            nome_arquivo = partes[1]
+            remover_arquivo(conn, nome_arquivo)
+
+        elif acao == "SAIR":
+            return False
+
+    except (IndexError, ValueError):
+        conn.sendall("ERRO".encode())
+
+    except (OSError, ConnectionError) as e:
+        print("Erro de conexão:", e)
+        return False
+
+    return True
+
 
 def cliente_thread(conn, addr):
+    """Processa comandos de um cliente conectado."""
+
     print(f"Cliente conectado: {addr}")
 
-    while True:
-        try:
+    try:
+        while True:
             dados = conn.recv(BUFFER_SIZE).decode()
 
             if not dados:
                 break
 
-            comando = dados.split('|')
+            continuar = processar_comando(conn, dados)
 
-            acao = comando[0]
-
-            if acao == "UPLOAD":
-                nome_arquivo = comando[1]
-                tamanho = int(comando[2])
-
-                receber_arquivo(conn, nome_arquivo, tamanho)
-
-            elif acao == "DOWNLOAD":
-                nome_arquivo = comando[1]
-
-                enviar_arquivo(conn, nome_arquivo)
-
-            elif acao == "LISTAR":
-                listar_arquivos(conn)
-
-            elif acao == "REMOVER":
-                nome_arquivo = comando[1]
-
-                remover_arquivo(conn, nome_arquivo)
-
-            elif acao == "SAIR":
+            if not continuar:
                 break
 
-        except Exception as e:
-            print("Erro:", e)
-            break
-
-    conn.close()
-    print(f"Cliente desconectado: {addr}")
+    finally:
+        conn.close()
+        print(f"Cliente desconectado: {addr}")
 
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def iniciar_servidor():
+    """Inicializa o servidor TCP."""
 
-server.bind((HOST, PORT))
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((HOST, PORT))
+    server.listen()
 
-server.listen()
+    print(f"Servidor ouvindo em {HOST}:{PORT}")
 
-print(f"Servidor ouvindo em {HOST}:{PORT}")
+    while True:
+        conn, addr = server.accept()
+        thread = threading.Thread(
+            target=cliente_thread,
+            args=(conn, addr),
+            daemon=True
+        )
+        thread.start()
 
-while True:
-    conn, addr = server.accept()
 
-    thread = threading.Thread(target=cliente_thread, args=(conn, addr))
-
-    thread.start()
+if __name__ == "__main__":
+    iniciar_servidor()
