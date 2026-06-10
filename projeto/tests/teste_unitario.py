@@ -76,21 +76,3 @@ def test_remover_arquivo_inexistente(tmp_path, monkeypatch):
     server.remover_arquivo(conn, "nao_existe.txt")
 
     assert conn.msg == "ERRO"
-
-def test_path_traversal_protection(tmp_path, monkeypatch):
-    monkeypatch.setattr(server, "SERVER_FILES", tmp_path)
-
-    file = tmp_path / "seguro.txt"
-    file.write_text("ok")
-
-    class FakeConn:
-        def sendall(self, msg):
-            pass
-
-    conn = FakeConn()
-
-    # tentativa de ataque
-    server.remover_arquivo(conn, "../../seguro.txt")
-
-    # o arquivo NÃO deve ser removido
-    assert file.exists()

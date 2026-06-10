@@ -3,8 +3,7 @@
 ## 1. Objetivo
 
 Este documento descreve o plano de testes do projeto de transferência de arquivos utilizando sockets TCP em Python. O objetivo é validar o funcionamento correto das funcionalidades implementadas no sistema cliente-servidor.
-
----
+===
 
 # 2. Ferramentas Utilizadas
 
@@ -16,6 +15,10 @@ Este documento descreve o plano de testes do projeto de transferência de arquiv
 | Terminal/CMD | Execução dos processos       |
 | VS Code      | Desenvolvimento e testes     |
 | Socket TCP   | Comunicação cliente-servidor |
+| Pylint       | Analise estática             |
+| Mypy         | Analise estática             |
+| Bandit       | Analise estática             |
+| pytest       | Teste unitário               |
 
 ---
 
@@ -38,20 +41,20 @@ Este documento descreve o plano de testes do projeto de transferência de arquiv
 ```text
 projeto/
 │
-├── server.py
-├── client.py
+├── client_files/
 ├── server_files/
-└── client_files/
+├── client.py
+└── server.py
 ```
-
 ---
 
 # 4. Restrições
 
 * O sistema utiliza apenas comunicação local (`localhost`)
-* Apenas arquivos simples são suportados
+* Apenas arquivos simples são suportados como arquivos .txt
 * Não há autenticação de usuários
 * Não há criptografia de dados
+* Ambos os códigos precisam ser executados em terminais diferentes ou utilizando "&"
 * O servidor deve ser iniciado antes dos clientes
 
 ---
@@ -132,33 +135,3 @@ git pull
 | Remoção        |       |       |       |       | X     |       | X     |       |
 | Concorrência   |       |       |       |       |       |       | X     |       |
 | Encerramento   |       |       |       |       |       |       |       | X     |
-
----
-
-# 8. Critérios de Sucesso
-
-O sistema será considerado aprovado caso:
-
-* Todos os testes executem sem falhas críticas
-* O servidor suporte múltiplos clientes
-* Upload e download ocorram corretamente
-* Não ocorram perdas de arquivos
-* As conexões sejam encerradas corretamente
-
----
-
-# 9. Possíveis Melhorias Futuras
-
-* Autenticação de usuários
-* Criptografia TLS/SSL
-* Interface gráfica
-* Logs de auditoria
-* Transferência de diretórios
-* Barra de progresso
-* Compressão de arquivos
-
----
-
-# 10. Responsável
-
-Projeto desenvolvido para fins acadêmicos utilizando Python e sockets TCP.
