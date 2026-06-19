@@ -76,33 +76,34 @@ def listar_arquivos(conn):
 
     conn.sendall("\n".join(arquivos).encode())
 
+
 def remover_arquivo(conn, nome_arquivo):
     """Remove arquivo com proteção contra path traversal."""
 
     base_dir = Path(SERVER_FILES).resolve()
+    nome_arquivo_limpo = Path(nome_arquivo).name
+    caminho = (base_dir / nome_arquivo_limpo).resolve()
 
-    nome_arquivo = Path(nome_arquivo).name
-
-    caminho = (base_dir / nome_arquivo).resolve()
-
-    if base_dir not in caminho.parents:
+    # Correção lógica e de consistência: garante conformidade com o diretório base
+    if base_dir != caminho.parent:
         conn.sendall("ERRO".encode())
         return
 
     if caminho.exists():
         caminho.unlink()
         conn.sendall("OK".encode())
-        print(f"Arquivo removido: {nome_arquivo}")
+        print(f"Arquivo removido: {nome_arquivo_limpo}")
     else:
         conn.sendall("ERRO".encode())
+
 
 def processar_comando(conn, dados):
     """Interpreta e executa comandos recebidos do cliente."""
 
     partes = dados.split("|")
 
-    if len(parts := partes) == 0:
-        return
+    if not partes or partes[0] == "":
+        return True
 
     acao = partes[0]
 

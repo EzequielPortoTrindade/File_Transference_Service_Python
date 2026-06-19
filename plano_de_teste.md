@@ -44,7 +44,11 @@ projeto/
 ├── client_files/
 ├── server_files/
 ├── client.py
-└── server.py
+├── server.py
+└── tests/
+    │
+    ├──test_sistema.py
+    └──test_unitario.py
 ```
 ---
 
@@ -74,7 +78,6 @@ py server.py
 ```bash
 py client.py
 ```
-
 ---
 
 # 5.2 Procedimentos de Versionamento
@@ -106,6 +109,35 @@ git pull
 4. Abrir Pull Request
 5. Revisar e aprovar alterações
 6. Realizar merge na branch principal
+---
+
+# 5.3 Procedimento de Teste Estático
+
+# Analise estática 
+
+ pylint server.py client.py
+
+ mypy server.py client.py
+
+ bandit server.py client.py
+
+ # ou
+
+python -m pytest -v tests/
+
+python -m pylint server.py client.py
+
+python -m mypy server.py client.py
+
+python -m bandit server.py client.py
+
+# 5.4 Procedimento de Teste Unitário e de Componente
+
+python -m pytest -v tests/
+
+# 5.5 Procedimento de Teste com o Ambiente Configurado
+
+act -P ubuntu-latest=python:3.12-slim
 
 ---
 

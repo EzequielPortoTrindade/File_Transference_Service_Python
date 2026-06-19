@@ -1,0 +1,33 @@
+name: CI - Sistema de Arquivos TCP
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Instalar Dependências e Ferramentas de Linter
+      run: |
+        mkdir -p client_files server_files
+        python3 -m pip install pytest pylint mypy bandit
+
+    - name: Análise de Segurança (Bandit)
+      run: |
+        python3 -m bandit projeto/server.py projeto/client.py
+
+    - name: Verificação de Tipagem Estática (Mypy)
+      run: |
+        python3 -m mypy projeto/server.py projeto/client.py
+
+    - name: Análise de Estilo e Boas Práticas (Pylint)
+      run: |
+        python3 -m pylint --fail-under=9.0 projeto/server.py projeto/client.py
+
+    - name: Executar testes com Pytest
+      env:
+        PYTHONPATH: ${{ github.workspace }}/projeto
+      run: |
+        python3 -m pytest -v projeto/tests/
