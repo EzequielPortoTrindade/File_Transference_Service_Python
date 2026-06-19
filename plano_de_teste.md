@@ -111,27 +111,9 @@ git pull
 
 # 6. Casos de Teste
 
-| ID    | Funcionalidade           | Descrição do Teste                       | Resultado Esperado             |
-| ----- | ------------------------ | ---------------------------------------- | ------------------------------ |
-| CT-01 | Conexão cliente-servidor | Cliente conectar ao servidor             | Conexão estabelecida           |
-| CT-02 | Upload de arquivo        | Enviar arquivo do cliente ao servidor    | Arquivo salvo no servidor      |
-| CT-03 | Download de arquivo      | Baixar arquivo do servidor               | Arquivo salvo no cliente       |
-| CT-04 | Listagem de arquivos     | Solicitar arquivos do servidor           | Lista exibida corretamente     |
-| CT-05 | Remoção de arquivo       | Excluir arquivo do servidor              | Arquivo removido               |
-| CT-06 | Arquivo inexistente      | Solicitar arquivo inválido               | Mensagem de erro               |
-| CT-07 | Múltiplos clientes       | Conectar vários clientes simultaneamente | Servidor atender todos         |
-| CT-08 | Encerramento de conexão  | Cliente sair do sistema                  | Conexão encerrada corretamente |
+
 
 ---
 
 # 7. Matriz de Funcionalidades x Testes
 
-| Funcionalidade | CT-01 | CT-02 | CT-03 | CT-04 | CT-05 | CT-06 | CT-07 | CT-08 |
-| -------------- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
-| Conexão TCP    | X     |       |       |       |       |       | X     | X     |
-| Upload         |       | X     |       |       |       |       | X     |       |
-| Download       |       |       | X     |       | X     | X     | X     |       |
-| Listagem       |       |       |       | X     |       |       | X     |       |
-| Remoção        |       |       |       |       | X     |       | X     |       |
-| Concorrência   |       |       |       |       |       |       | X     |       |
-| Encerramento   |       |       |       |       |       |       |       | X     |
