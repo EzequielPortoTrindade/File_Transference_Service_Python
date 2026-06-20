@@ -143,9 +143,10 @@ act -P ubuntu-latest=python:3.12-slim
 
 # 6. Casos de Teste
 
-
+![Tabela_de_casos_de_teste](Casos_de_teste.png)
 
 ---
 
 # 7. Matriz de Funcionalidades x Testes
 
+![Tabela_de_Matriz](Matriz.png)

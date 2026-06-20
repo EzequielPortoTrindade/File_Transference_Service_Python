@@ -16,4 +16,3 @@
  1. abra dois terminais e execute "py server.py" em um deles (ou execute o comando com & no mesmo terminal);
 
  2. após isso, execute "py client.py" no segundo terminal e acesse o menu.
-
