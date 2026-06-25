@@ -1,5 +1,3 @@
-# tests/test_system.py
-
 import os
 import socket
 import threading
