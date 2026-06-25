@@ -84,7 +84,6 @@ def remover_arquivo(conn, nome_arquivo):
     nome_arquivo_limpo = Path(nome_arquivo).name
     caminho = (base_dir / nome_arquivo_limpo).resolve()
 
-    # Correção lógica e de consistência: garante conformidade com o diretório base
     if base_dir != caminho.parent:
         conn.sendall("ERRO".encode())
         return
