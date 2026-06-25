@@ -1,8 +1,3 @@
-"""
-Servidor TCP para transferência de arquivos.
-Gerencia uploads, downloads, listagem e remoção de arquivos.
-"""
-
 import socket
 import threading
 import os
