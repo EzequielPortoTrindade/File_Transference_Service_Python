@@ -17,9 +17,6 @@ BUFFER_SIZE = 1024
 
 @pytest.fixture(scope="session", autouse=True)
 def servidor():
-    """
-    Inicia o servidor uma vez para toda a suíte.
-    """
 
     thread = threading.Thread(
         target=iniciar_servidor,
@@ -35,9 +32,6 @@ def servidor():
 
 @pytest.fixture(autouse=True)
 def limpar_arquivos():
-    """
-    Limpa os arquivos do servidor antes e depois de cada teste.
-    """
 
     os.makedirs(SERVER_FILES, exist_ok=True)
 
@@ -68,12 +62,6 @@ def criar_cliente():
 
 
 def test_upload_e_listagem():
-    """
-    Fluxo:
-    1. Faz upload de um arquivo.
-    2. Lista arquivos.
-    3. Verifica se o arquivo aparece.
-    """
 
     client = criar_cliente()
 
@@ -112,17 +100,11 @@ def test_upload_e_listagem():
 
 
 def test_download_arquivo():
-    """
-    Fluxo:
-    1. Cria arquivo no servidor.
-    2. Solicita download.
-    3. Verifica conteúdo recebido.
-    """
 
     nome_arquivo = "download.txt"
 
     conteudo_original = (
-        b"conteudo enviado pelo servidor"
+        b"conteudo enviado"
     )
 
     caminho = os.path.join(
