@@ -139,6 +139,8 @@ python -m pytest -v tests/
 
 act -P ubuntu-latest=python:3.12-slim
 
+explicação: ao executar esse comando, todos os testes serão executados
+
 ---
 
 # 6. Casos de Teste
